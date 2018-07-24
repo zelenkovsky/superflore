@@ -11,11 +11,15 @@ install_requires = [
     'rosdistro',
     'rosdep',
     'gitpython',
-    'requests',
+    'requests >= 2.14.0',
     'docker',
     'pyyaml',
     'pygithub',
-    'catkin_pkg >= 0.4.0'
+    'catkin_pkg >= 0.4.0',
+    'docker-pycreds',
+    'websocket-client',
+    'gitdb2',
+    'rospkg'
 ]
 
 setup(
