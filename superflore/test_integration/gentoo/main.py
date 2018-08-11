@@ -16,7 +16,8 @@ import argparse
 import sys
 
 from superflore.test_integration.gentoo.build_base import GentooBuilder
-from superflore.utils import active_distros
+from superflore.utils import ros1_distros
+from superflore.utils import ros2_distros
 import yaml
 
 
@@ -30,7 +31,7 @@ def main():
         help='distro(s) to check',
         type=str,
         nargs="+",
-        default=active_distros,
+        default=ros1_distros + ros2_distros,
     )
     parser.add_argument(
         '--pkgs',

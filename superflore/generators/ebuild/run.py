@@ -23,7 +23,6 @@ from superflore.generators.ebuild.overlay_instance import RosOverlay
 from superflore.parser import get_parser
 from superflore.repo_instance import RepoInstance
 from superflore.TempfileManager import TempfileManager
-from superflore.utils import active_distros
 from superflore.utils import clean_up
 from superflore.utils import err
 from superflore.utils import file_pr
@@ -32,6 +31,7 @@ from superflore.utils import gen_missing_deps_msg
 from superflore.utils import info
 from superflore.utils import load_pr
 from superflore.utils import ok
+from superflore.utils import ros1_distros
 from superflore.utils import ros2_distros
 from superflore.utils import save_pr
 from superflore.utils import url_to_repo_org
@@ -48,20 +48,27 @@ def main():
     overlay = None
     preserve_existing = True
     parser = get_parser('Deploy ROS packages into Gentoo Linux')
+
     args = parser.parse_args(sys.argv[1:])
     pr_comment = args.pr_comment
     selected_targets = None
+
     if args.all:
         warn('"All" mode detected... This may take a while!')
         preserve_existing = False
+
     elif args.ros_distro:
+        warn('"{0}" distro detected...'.format(args.ros_distro))
         selected_targets = [args.ros_distro]
         set_index_for_distro(args.ros_distro)
         preserve_existing = False
+
     elif args.dry_run and args.pr_only:
         parser.error('Invalid args! cannot dry-run and file PR')
+
     elif args.pr_only and not args.output_repository_path:
         parser.error('Invalid args! no repository specified')
+
     elif args.pr_only:
         try:
             prev_overlay = RepoInstance(args.output_repository_path, False)
@@ -73,12 +80,16 @@ def main():
             err('Failed to file PR!')
             err('reason: {0}'.format(e))
             sys.exit(1)
+
     if not selected_targets:
-        selected_targets = active_distros + ros2_distros
+        selected_targets = ros1_distros + ros2_distros
+
     repo_org = 'ros'
     repo_name = 'ros-overlay'
+
     if args.upstream_repo:
         repo_org, repo_name = url_to_repo_org(args.upstream_repo)
+
     with TempfileManager(args.output_repository_path) as _repo:
         if not args.output_repository_path:
             # give our group write permissions to the temp dir
@@ -90,6 +101,7 @@ def main():
             org=repo_org,
             repo=repo_name
         )
+
         if not preserve_existing and not args.only:
             pr_comment = pr_comment or (
                 'Superflore ebuild generator began regeneration of all'
@@ -127,16 +139,16 @@ def main():
                 except KeyError:
                     err("No package to satisfy key '%s'" % pkg)
                     sys.exit(1)
+
             # Commit changes and file pull request
             regen_dict = dict()
             regen_dict[args.ros_distro] = args.only
             overlay.regenerate_manifests(regen_dict)
             overlay.commit_changes(args.ros_distro)
             if args.dry_run:
-                save_pr(
-                    overlay, args.only, missing_deps=None, comment=pr_comment
-                )
+                save_pr(overlay, args.only, None, pr_comment)
                 sys.exit(0)
+
             delta = "Regenerated: '%s'\n" % args.only
             file_pr(overlay, delta, '', pr_comment)
             ok('Successfully synchronized repositories!')
@@ -176,14 +188,14 @@ def main():
         overlay.regenerate_manifests(total_installers)
         overlay.commit_changes(args.ros_distro)
 
+        # Commit changes and file pull request
         if args.dry_run:
             info('Running in dry mode, not filing PR')
-            save_pr(
-                overlay, delta, missing_deps=missing_deps, comment=pr_comment
-            )
+            save_pr(overlay, delta, missing_deps, pr_comment)
+            clean_up()
             sys.exit(0)
-        file_pr(overlay, delta, missing_deps, comment=pr_comment)
 
+        file_pr(overlay, delta, missing_deps, pr_comment)
         clean_up()
         ok('Successfully synchronized repositories!')
 

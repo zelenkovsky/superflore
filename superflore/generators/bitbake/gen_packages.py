@@ -29,6 +29,7 @@ from superflore.utils import get_pkg_version
 from superflore.utils import make_dir
 from superflore.utils import ok
 from superflore.utils import warn
+from urllib.error import URLError
 
 org = "Open Source Robotics Foundation"
 org_license = "BSD"
@@ -80,6 +81,9 @@ def regenerate_installer(
             distro, pkg, tar_dir, md5_cache, sha256_cache, patches, inc_files
         )
         current.recipe.name = pkg.replace('_', '-')
+    except URLError as e:
+        err("Could not fetch pkg source!")
+        return None, []
     except Exception as e:
         err('Failed to generate installer for package {}!'.format(pkg))
         raise e

@@ -17,7 +17,8 @@ import time
 from superflore.repo_instance import RepoInstance
 from superflore.utils import info
 from superflore.utils import rand_ascii_str
-
+from superflore.utils import ros1_distros
+from superflore.utils import ros2_distros
 
 class RosMeta(object):
     def __init__(self, repo_dir, do_clone, org='allenh1', repo='meta-ros'):
@@ -36,17 +37,22 @@ class RosMeta(object):
 
     def commit_changes(self, distro):
         info('Adding changes...')
-        if distro == 'all' or distro == 'update':
+        if not distro or distro == 'all' or distro == 'update':
             self.repo.git.add('recipes-ros-*')
         else:
             self.repo.git.add('recipes-ros-{0}'.format(distro))
-        commit_msg = {
+
+        values = {
             'update': 'rosdistro sync, {0}',
-            'all': 'regenerate all distros, {0}',
-            'lunar': 'regenerate ros-lunar, {0}',
-            'indigo': 'regenerate ros-indigo, {0}',
-            'kinetic': 'regenerate ros-kinetic, {0}',
-        }[distro].format(time.ctime())
+            'all': 'regenerate all distros, {0}'
+        }
+        values.update( dict([
+                (d, 'regenerate ros-%s, {0}' % d) \
+                for d in ros1_distros + ros2_distros
+            ])
+        )
+        commit_msg = values[distro].format(time.ctime())
+        
         info('Committing to branch {0}...'.format(self.branch_name))
         self.repo.git.commit(m='{0}'.format(commit_msg))
 
