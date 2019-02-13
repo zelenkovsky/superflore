@@ -210,14 +210,14 @@ def get_license(l):
         raise UnknownLicense('bad license')
 
 
-def resolve_dep(pkg, os):
-    if os == 'oe':
-        return _resolve_dep_open_embedded(pkg)
-    elif os == 'gentoo':
-        return resolve_rosdep_key(pkg, 'gentoo', '2.4.0')
-    else:
-        msg = "Unknown target platform '{0}'".format(os)
-        raise UnknownPlatform(msg)
+def resolve_dep(pkg, os, os_version, distro):
+    # if os == 'oe':
+    #     return _resolve_dep_open_embedded(pkg)
+    # elif os == 'gentoo':
+        return resolve_rosdep_key(pkg, os, os_version, distro)
+    # else:
+    #     msg = "Unknown target platform '{0}'".format(os)
+    #     raise UnknownPlatform(msg)
 
 
 def _resolve_dep_open_embedded(pkg):

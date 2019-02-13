@@ -164,7 +164,8 @@ class yoctoRecipe(object):
         for dep in sorted(self.depends):
             if not first:
                 ret += ' '
-            ret += resolve_dep(dep, 'oe')
+            # TODO: pass self.distro to resolve_dep
+            ret += resolve_dep(dep, 'gentoo', '2.4.0', self.distro)
             first = False
         ret += '"\n'
 

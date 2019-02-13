@@ -62,9 +62,7 @@ def resolve_more_for_os(rosdep_key, view, installer, os_name, os_version):
     ctx = create_default_installer_context()
     os_installers = ctx.get_os_installer_keys(os_name)
     default_os_installer = ctx.get_default_os_installer_key(os_name)
-    inst_key, rule = d.get_rule_for_platform(os_name, os_version,
-                                             os_installers,
-                                             default_os_installer)
+    inst_key, rule = d.get_rule_for_platform(os_name, os_version, os_installers, default_os_installer)
     assert inst_key in os_installers
     return installer.resolve(rule), inst_key, default_os_installer
 
@@ -77,7 +75,7 @@ def resolve_rosdep_key(
     ignored=None
 ):
     ignored = ignored or []
-    ctx = create_default_installer_context()
+    ctx = create_default_installer_context(verbose=True)
     try:
         installer_key = ctx.get_default_os_installer_key(os_name)
     except KeyError:
