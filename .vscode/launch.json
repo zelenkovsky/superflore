@@ -1,0 +1,54 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "superflore-gen-meta-pkgs",
+            "type": "python",
+            "request": "launch",
+            "program": "${env:HOME}/.local/bin/superflore-gen-meta-pkgs",
+            "stopOnEntry": true,
+            "console": "externalTerminal",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "SUPERFLORE_GITHUB_TOKEN": "xxxx",
+                "ROSDISTRO_INDEX_URL": "https://raw.githubusercontent.com/ros2/rosdistro/a5ad32030b1c3d8fbcceb63afa094a203df56c34/index.yaml"
+            },
+            "args": [
+                "--dry-run",
+                "--ros-distro",
+                "bouncy"
+            ]
+        },
+        {
+            "name": "superflore-check-ebuilds",
+            "type": "python",
+            "request": "launch",
+            "program": "${env:HOME}/.local/bin/superflore-check-ebuilds",
+            "stopOnEntry": true,
+            "console": "externalTerminal",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "SUPERFLORE_GITHUB_TOKEN": "xxxx"
+            },
+            "args": [
+            ]
+        },
+        {
+            "name": "superflore-gen-ebuilds",
+            "type": "python",
+            "request": "launch",
+            "program": "${env:HOME}/.local/bin/superflore-gen-ebuilds",
+            "stopOnEntry": true,
+            "console": "externalTerminal",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "SUPERFLORE_GITHUB_TOKEN": "xxxx"
+            },
+            "args": [
+            ]
+        },
+    ]
+}
